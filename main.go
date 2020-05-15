@@ -172,7 +172,7 @@ type Book struct {
 	Err       error
 }
 
-func (book Book) String() string {
+func (book *Book) String() string {
 	return fmt.Sprintf("%v\n%v\n%v\n%v\nISBN: %v",
 		book.Title, book.Author, book.Price, book.Publisher, book.Isbn)
 }
