@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -51,7 +53,7 @@ func scrapeEach(url, cacheFilePath string, ch chan<- *Book) {
 	}
 }
 
-func loadHTML(bookID, url, cacheFilePath string) (string, error) {
+func loadHTML(bookID, url, cacheFilePath string) (io.Reader, error) {
 	cache := filepath.Join(cacheFilePath, bookID+".html")
 	if Exists(cache) {
 		return loadHTMLFromFile(cache)
@@ -59,8 +61,8 @@ func loadHTML(bookID, url, cacheFilePath string) (string, error) {
 	return loadHTMLFromWeb(url, cache)
 }
 
-func parseHTML(html string, book *Book) error {
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+func parseHTML(html io.Reader, book *Book) error {
+	doc, err := goquery.NewDocumentFromReader(html)
 	if err != nil {
 		return err
 	}
@@ -141,23 +143,23 @@ func sanitize(str string) string {
 	return s3
 }
 
-func loadHTMLFromFile(cache string) (string, error) {
+func loadHTMLFromFile(cache string) (io.Reader, error) {
 	content, err := ioutil.ReadFile(cache)
-	return string(content), err
+	return bytes.NewReader(content), err
 }
 
-func loadHTMLFromWeb(url, cache string) (string, error) {
+func loadHTMLFromWeb(url, cache string) (io.Reader, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	ioutil.WriteFile(cache, body, 0644)
-	return string(body), nil
+	return bytes.NewReader(body), nil
 }
 
 // Book defines type of book in kinokuniya
