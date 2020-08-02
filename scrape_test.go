@@ -30,7 +30,7 @@ func TestScrape(t *testing.T) {
 		},
 		{
 			"https://www.kinokuniya.co.jp/f/dsg-01-9784873119175",
-			"Effective Python - Pythonプログラムを改良する90項目 (第2版)",
+			"Effective Python―Pythonプログラムを改良する90項目 (第2版)",
 			"ブレット・スラットキン、黒川利明",
 			3600,
 			"オライリー・ジャパン",
